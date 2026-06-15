@@ -149,11 +149,20 @@ def get_homework(days_offset: int = 0) -> str:
 
 if __name__ == "__main__":
     import os
-    
-    # Wir zwingen Uvicorn (das von FastMCP genutzt wird), auf 0.0.0.0 
-    # und dem von Render zugewiesenen Port zu laufen
-    os.environ["UVICORN_HOST"] = "0.0.0.0"
-    os.environ["UVICORN_PORT"] = os.environ.get("PORT", "10000")
-    
-    logger.info(f"Starte WebUntis MCP-Server im SSE-Modus auf Port {os.environ['UVICORN_PORT']}...")
+    import uvicorn
+
+    # Port von Render auslesen (Standard 10000)
+    port = int(os.environ.get("PORT", 10000))
+
+    # Der Monkeypatch-Trick:
+    # Wir klinken uns in Uvicorn ein und überschreiben die fest im MCP-Framework
+    # hinterlegten Werte (127.0.0.1:8000) dynamisch mit den Render-Vorgaben.
+    original_run = uvicorn.run
+    def patched_run(*args, **kwargs):
+        kwargs["host"] = "0.0.0.0"
+        kwargs["port"] = port
+        return original_run(*args, **kwargs)
+    uvicorn.run = patched_run
+
+    logger.info(f"Starte WebUntis MCP-Server im SSE-Modus (gepatcht auf 0.0.0.0:{port})...")
     mcp.run(transport="sse")
