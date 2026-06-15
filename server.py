@@ -148,7 +148,12 @@ def get_homework(days_offset: int = 0) -> str:
         return f"Fehler beim Abrufen der Hausaufgaben: {str(e)}"
 
 if __name__ == "__main__":
-    logger.info("Starte WebUntis MCP-Server im SSE-Modus...")
-    # FastMCP liest den Port automatisch aus der Render-Umgebung (os.environ["PORT"])
-    # und bindet sich standardmäßig an 0.0.0.0
+    import os
+    
+    # Wir zwingen Uvicorn (das von FastMCP genutzt wird), auf 0.0.0.0 
+    # und dem von Render zugewiesenen Port zu laufen
+    os.environ["UVICORN_HOST"] = "0.0.0.0"
+    os.environ["UVICORN_PORT"] = os.environ.get("PORT", "10000")
+    
+    logger.info(f"Starte WebUntis MCP-Server im SSE-Modus auf Port {os.environ['UVICORN_PORT']}...")
     mcp.run(transport="sse")
