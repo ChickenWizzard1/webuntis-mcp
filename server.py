@@ -148,7 +148,7 @@ def get_homework(days_offset: int = 0) -> str:
         return f"Fehler beim Abrufen der Hausaufgaben: {str(e)}"
 
 if __name__ == "__main__":
-    # Port dynamisch über Umgebungsvariable (wichtig für Render/Cloud), lokal standardmäßig 8000
-    port = int(os.environ.get("PORT", 8000))
-    logger.info(f"Starte WebUntis MCP-Server im SSE-Modus auf Port {port}...")
-    mcp.run(transport="sse", host="0.0.0.0", port=port)
+    logger.info("Starte WebUntis MCP-Server im SSE-Modus...")
+    # FastMCP liest den Port automatisch aus der Render-Umgebung (os.environ["PORT"])
+    # und bindet sich standardmäßig an 0.0.0.0
+    mcp.run(transport="sse")
