@@ -1,2 +1,2 @@
-mcp>=0.1.0
-python-webuntis>=0.2.1
+mcp
+python-webuntis
